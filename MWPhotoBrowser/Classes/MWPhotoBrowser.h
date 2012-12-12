@@ -11,6 +11,7 @@
 #import "MWPhoto.h"
 #import "MWPhotoProtocol.h"
 #import "MWCaptionView.h"
+#import "QDFileViewControllerNavigationDelegate.h"
 
 // Debug Logging
 #if 0 // Set to 1 to enable debug logging
@@ -33,6 +34,7 @@
 
 // Properties
 @property (nonatomic) BOOL displayActionButton;
+@property (nonatomic, assign) id <QDFileViewControllerNavigationDelegate> fileViewNavigationDelegate;
 
 // Init
 - (id)initWithPhotos:(NSArray *)photosArray  __attribute__((deprecated)); // Depreciated

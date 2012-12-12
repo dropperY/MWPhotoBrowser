@@ -18,15 +18,17 @@
 #define SYSTEM_VERSION_LESS_THAN(v)                 ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedAscending)
 #define SYSTEM_VERSION_LESS_THAN_OR_EQUAL_TO(v)     ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedDescending)
 
+static float kLeftBound = -40.0;
 #define PADDING                 10
 #define PAGE_INDEX_TAG_OFFSET   1000
 #define PAGE_INDEX(page)        ([(page) tag] - PAGE_INDEX_TAG_OFFSET)
 
 // Private
-@interface MWPhotoBrowser () {
+@interface MWPhotoBrowser () <UIGestureRecognizerDelegate> {
     
 	// Data
     id <MWPhotoBrowserDelegate> _delegate;
+    id <QDFileViewControllerNavigationDelegate> _fileViewNavigationDelegate;
     NSUInteger _photoCount;
     NSMutableArray *_photos;
 	NSArray *_depreciatedPhotoData; // Depreciated
@@ -133,6 +135,7 @@
 @implementation MWPhotoBrowser
 
 // Properties
+@synthesize fileViewNavigationDelegate = _fileViewNavigationDelegate;
 @synthesize previousNavBarTintColor = _previousNavBarTintColor;
 @synthesize navigationBarBackgroundImageDefault = _navigationBarBackgroundImageDefault,
 navigationBarBackgroundImageLandscapePhone = _navigationBarBackgroundImageLandscapePhone;
@@ -171,6 +174,10 @@ navigationBarBackgroundImageLandscapePhone = _navigationBarBackgroundImageLandsc
 - (id)initWithDelegate:(id <MWPhotoBrowserDelegate>)delegate {
     if ((self = [self init])) {
         _delegate = delegate;
+        
+        UISwipeGestureRecognizer *swipeGesture = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipe:)];
+        swipeGesture.delegate = self;
+        [self.view addGestureRecognizer:swipeGesture];
 	}
 	return self;
 }
@@ -824,7 +831,13 @@ navigationBarBackgroundImageLandscapePhone = _navigationBarBackgroundImageLandsc
 #pragma mark - UIScrollView Delegate
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
-	
+	if (scrollView.contentOffset.x < kLeftBound) {
+        if ([self.fileViewNavigationDelegate respondsToSelector:@selector(viewController:withNavigateDirection:)]) {
+            [self.fileViewNavigationDelegate viewController:self withNavigateDirection:NavigateToPrevious];
+        }
+        return;
+	}
+    
     // Checks
 	if (!_viewIsActive || _performingLayout || _rotating) return;
 	
@@ -969,7 +982,13 @@ navigationBarBackgroundImageLandscapePhone = _navigationBarBackgroundImageLandsc
 
 - (BOOL)areControlsHidden { return (_toolbar.alpha == 0); /* [UIApplication sharedApplication].isStatusBarHidden; */ }
 - (void)hideControls { [self setControlsHidden:YES animated:YES permanent:NO]; }
-- (void)toggleControls { [self setControlsHidden:![self areControlsHidden] animated:YES permanent:NO]; }
+- (void)toggleControls
+{
+    if ([self.fileViewNavigationDelegate respondsToSelector:@selector(didTapViewController:)]) {
+        [self.fileViewNavigationDelegate didTapViewController:self];
+    }
+    [self setControlsHidden:![self areControlsHidden] animated:YES permanent:NO];
+}
 
 #pragma mark - Properties
 
@@ -1152,6 +1171,33 @@ navigationBarBackgroundImageLandscapePhone = _navigationBarBackgroundImageLandsc
 		[alert show];
     }
 	[self dismissModalViewControllerAnimated:YES];
+}
+
+#pragma mark Swipe Gesture
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch
+{
+    BOOL shouldReceive = NO;
+    if(((UISwipeGestureRecognizer*)gestureRecognizer).direction==UISwipeGestureRecognizerDirectionLeft
+       ||((UISwipeGestureRecognizer*)gestureRecognizer).direction==UISwipeGestureRecognizerDirectionRight)
+    {
+        shouldReceive = YES;
+    }
+    return shouldReceive;
+}
+
+- (void)swipe:(UISwipeGestureRecognizer *)sender
+{
+    NavigateDirection navigationDirection;
+    if (sender.direction == UISwipeGestureRecognizerDirectionRight) {
+        navigationDirection = NavigateToPrevious;
+    } else if (sender.direction == UISwipeGestureRecognizerDirectionLeft) {
+        navigationDirection = NavigateToNext;
+    }
+    
+    if ([self.fileViewNavigationDelegate respondsToSelector:@selector(viewController:withNavigateDirection:)]) {
+        [self.fileViewNavigationDelegate viewController:self withNavigateDirection:navigationDirection];
+    }
 }
 
 @end
