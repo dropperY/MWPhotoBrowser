@@ -638,7 +638,7 @@ navigationBarBackgroundImageLandscapePhone = _navigationBarBackgroundImageLandsc
         if ([photo underlyingImage]) {
             // Successful load
             [page displayImage];
-            [self loadAdjacentPhotosIfNecessary:photo];
+//            [self loadAdjacentPhotosIfNecessary:photo];
         } else {
             // Failed to load
             [page displayImageFailure];
@@ -772,11 +772,11 @@ navigationBarBackgroundImageLandscapePhone = _navigationBarBackgroundImageLandsc
     
     // Load adjacent images if needed and the photo is already
     // loaded. Also called after photo has been loaded in background
-    id <MWPhoto> currentPhoto = [self photoAtIndex:index];
-    if ([currentPhoto underlyingImage]) {
-        // photo loaded so load ajacent now
-        [self loadAdjacentPhotosIfNecessary:currentPhoto];
-    }
+//    id <MWPhoto> currentPhoto = [self photoAtIndex:index];
+//    if ([currentPhoto underlyingImage]) {
+//        // photo loaded so load ajacent now
+//        [self loadAdjacentPhotosIfNecessary:currentPhoto];
+//    }
     
 }
 

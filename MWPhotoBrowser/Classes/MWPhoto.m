@@ -134,7 +134,13 @@ caption = _caption;
         NSError *error = nil;
         NSData *data = [NSData dataWithContentsOfFile:_photoPath options:NSDataReadingUncached error:&error];
         if (!error) {
-            self.underlyingImage = [[[UIImage alloc] initWithData:data] autorelease];
+            UIImage *originImage = [[[UIImage alloc] initWithData:data] autorelease];
+            if (data.length > pow(1024, 2)) {
+                self.underlyingImage = [[self scaleImage:originImage toSize:CGSizeMake(320.0,480.0)] retain];
+            } else {
+                self.underlyingImage = originImage;
+            }
+            
         } else {
             self.underlyingImage = nil;
             MWLog(@"Photo from file error: %@", error);
@@ -144,6 +150,15 @@ caption = _caption;
         [self performSelectorOnMainThread:@selector(imageDidFinishLoadingSoDecompress) withObject:nil waitUntilDone:NO];
         [pool drain];
     }
+}
+
+-(UIImage *)scaleImage:(UIImage *)image toSize:(CGSize)newSize
+{
+    UIGraphicsBeginImageContext(newSize);
+    [image drawInRect:CGRectMake(0, 0, newSize.width, newSize.height)];
+    UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return newImage;
 }
 
 // Called on main
