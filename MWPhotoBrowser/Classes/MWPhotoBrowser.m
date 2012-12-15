@@ -24,7 +24,7 @@ static float kLeftBound = -40.0;
 #define PAGE_INDEX(page)        ([(page) tag] - PAGE_INDEX_TAG_OFFSET)
 
 // Private
-@interface MWPhotoBrowser () <UIGestureRecognizerDelegate> {
+@interface MWPhotoBrowser () {
     
 	// Data
     id <MWPhotoBrowserDelegate> _delegate;
@@ -175,9 +175,11 @@ navigationBarBackgroundImageLandscapePhone = _navigationBarBackgroundImageLandsc
     if ((self = [self init])) {
         _delegate = delegate;
         
-        UISwipeGestureRecognizer *swipeGesture = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipe:)];
-        swipeGesture.delegate = self;
-        [self.view addGestureRecognizer:swipeGesture];
+        UISwipeGestureRecognizer *leftSwipeGesture = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipe:)];
+        [self.view addGestureRecognizer:leftSwipeGesture];
+        
+        UISwipeGestureRecognizer *rightSwipeGesture = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipe:)];
+        [self.view addGestureRecognizer:rightSwipeGesture];
 	}
 	return self;
 }
@@ -1174,17 +1176,6 @@ navigationBarBackgroundImageLandscapePhone = _navigationBarBackgroundImageLandsc
 }
 
 #pragma mark Swipe Gesture
-
-- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch
-{
-    BOOL shouldReceive = NO;
-    if(((UISwipeGestureRecognizer*)gestureRecognizer).direction==UISwipeGestureRecognizerDirectionLeft
-       ||((UISwipeGestureRecognizer*)gestureRecognizer).direction==UISwipeGestureRecognizerDirectionRight)
-    {
-        shouldReceive = YES;
-    }
-    return shouldReceive;
-}
 
 - (void)swipe:(UISwipeGestureRecognizer *)sender
 {
