@@ -176,9 +176,11 @@ navigationBarBackgroundImageLandscapePhone = _navigationBarBackgroundImageLandsc
         _delegate = delegate;
         
         UISwipeGestureRecognizer *leftSwipeGesture = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipe:)];
+        leftSwipeGesture.direction = UISwipeGestureRecognizerDirectionLeft;
         [self.view addGestureRecognizer:leftSwipeGesture];
         
         UISwipeGestureRecognizer *rightSwipeGesture = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipe:)];
+        rightSwipeGesture.direction = UISwipeGestureRecognizerDirectionRight;
         [self.view addGestureRecognizer:rightSwipeGesture];
 	}
 	return self;
