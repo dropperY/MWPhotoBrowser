@@ -9,6 +9,8 @@
 #import "MWPhoto.h"
 #import "MWPhotoBrowser.h"
 
+#import "UIImage+AlteringUtilities.h"
+
 // Private
 @interface MWPhoto () {
 
@@ -136,7 +138,13 @@ caption = _caption;
         if (!error) {
             UIImage *originImage = [[[UIImage alloc] initWithData:data] autorelease];
             if (data.length > pow(1024, 2)) {
-                self.underlyingImage = [[self scaleImage:originImage toSize:CGSizeMake(320.0,480.0)] retain];
+                CGSize size;
+                if (originImage.imageOrientation == UIImageOrientationUp) {
+                    size = CGSizeMake(720.0f, 960.0f);
+                } else {
+                    size = CGSizeMake(960.0f, 720.0f);
+                }
+                self.underlyingImage = [[UIImage imageWithImage:originImage scaledToSizeWithSameAspectRatio:size] retain];
             } else {
                 self.underlyingImage = originImage;
             }
@@ -150,15 +158,6 @@ caption = _caption;
         [self performSelectorOnMainThread:@selector(imageDidFinishLoadingSoDecompress) withObject:nil waitUntilDone:NO];
         [pool drain];
     }
-}
-
--(UIImage *)scaleImage:(UIImage *)image toSize:(CGSize)newSize
-{
-    UIGraphicsBeginImageContext(newSize);
-    [image drawInRect:CGRectMake(0, 0, newSize.width, newSize.height)];
-    UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-    return newImage;
 }
 
 // Called on main
