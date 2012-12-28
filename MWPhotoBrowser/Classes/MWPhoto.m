@@ -137,7 +137,7 @@ caption = _caption;
         NSData *data = [NSData dataWithContentsOfFile:_photoPath options:NSDataReadingUncached error:&error];
         if (!error) {
             UIImage *originImage = [[[UIImage alloc] initWithData:data] autorelease];
-            if (data.length > pow(1024, 2)) {
+            if (data.length > 2 * pow(1024, 2)) {
                 CGSize size;
                 if (originImage.imageOrientation == UIImageOrientationUp) {
                     size = CGSizeMake(720.0f, 960.0f);
