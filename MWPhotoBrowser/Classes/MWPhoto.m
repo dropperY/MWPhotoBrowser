@@ -136,19 +136,12 @@ caption = _caption;
         NSError *error = nil;
         NSData *data = [NSData dataWithContentsOfFile:_photoPath options:NSDataReadingUncached error:&error];
         if (!error) {
-            UIImage *originImage = [[[UIImage alloc] initWithData:data] autorelease];
             if (data.length > 2 * pow(1024, 2)) {
-                CGSize size;
-                if (originImage.imageOrientation == UIImageOrientationUp) {
-                    size = CGSizeMake(720.0f, 960.0f);
-                } else {
-                    size = CGSizeMake(960.0f, 720.0f);
-                }
-                self.underlyingImage = [[UIImage imageWithImage:originImage scaledToSizeWithSameAspectRatio:size] retain];
-            } else {
-                self.underlyingImage = originImage;
+                UIImage *theImage =  [UIImage imageWithData:data];
+                data = UIImageJPEGRepresentation(theImage, 0.5);
             }
-            
+            UIImage *originImage = [[[UIImage alloc] initWithData:data] autorelease];
+            self.underlyingImage = originImage;
         } else {
             self.underlyingImage = nil;
             MWLog(@"Photo from file error: %@", error);
