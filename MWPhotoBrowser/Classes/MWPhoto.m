@@ -140,8 +140,7 @@ caption = _caption;
                 UIImage *theImage =  [UIImage imageWithData:data];
                 data = UIImageJPEGRepresentation(theImage, 0.5);
             }
-            UIImage *originImage = [[[UIImage alloc] initWithData:data] autorelease];
-            self.underlyingImage = originImage;
+            self.underlyingImage = [[[UIImage alloc] initWithData:data] autorelease];
         } else {
             self.underlyingImage = nil;
             MWLog(@"Photo from file error: %@", error);
