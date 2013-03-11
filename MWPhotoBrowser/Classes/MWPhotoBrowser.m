@@ -28,7 +28,7 @@ static float kLeftBound = -40.0;
     
 	// Data
     id <MWPhotoBrowserDelegate> _delegate;
-    id <QDFileViewControllerNavigationDelegate> _fileViewNavigationDelegate;
+    id <QDFileViewControllerDelegate> _fileViewControllerDelegate;
     NSUInteger _photoCount;
     NSMutableArray *_photos;
 	NSArray *_depreciatedPhotoData; // Depreciated
@@ -135,7 +135,7 @@ static float kLeftBound = -40.0;
 @implementation MWPhotoBrowser
 
 // Properties
-@synthesize fileViewNavigationDelegate = _fileViewNavigationDelegate;
+@synthesize fileViewControllerDelegate = _fileViewControllerDelegate;
 @synthesize previousNavBarTintColor = _previousNavBarTintColor;
 @synthesize navigationBarBackgroundImageDefault = _navigationBarBackgroundImageDefault,
 navigationBarBackgroundImageLandscapePhone = _navigationBarBackgroundImageLandscapePhone;
@@ -836,8 +836,8 @@ navigationBarBackgroundImageLandscapePhone = _navigationBarBackgroundImageLandsc
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
 	if (scrollView.contentOffset.x < kLeftBound) {
-        if ([self.fileViewNavigationDelegate respondsToSelector:@selector(viewController:withNavigateDirection:)]) {
-            [self.fileViewNavigationDelegate viewController:self withNavigateDirection:NavigateToPrevious];
+        if ([self.fileViewControllerDelegate respondsToSelector:@selector(viewController:withNavigateDirection:)]) {
+            [self.fileViewControllerDelegate viewController:self withNavigateDirection:NavigateToPrevious];
         }
         return;
 	}
@@ -988,8 +988,8 @@ navigationBarBackgroundImageLandscapePhone = _navigationBarBackgroundImageLandsc
 - (void)hideControls { [self setControlsHidden:YES animated:YES permanent:NO]; }
 - (void)toggleControls
 {
-    if ([self.fileViewNavigationDelegate respondsToSelector:@selector(didTapViewController:)]) {
-        [self.fileViewNavigationDelegate didTapViewController:self];
+    if ([self.fileViewControllerDelegate respondsToSelector:@selector(didTapViewController:)]) {
+        [self.fileViewControllerDelegate didTapViewController:self];
     }
     [self setControlsHidden:![self areControlsHidden] animated:YES permanent:NO];
 }
@@ -1188,8 +1188,8 @@ navigationBarBackgroundImageLandscapePhone = _navigationBarBackgroundImageLandsc
         navigationDirection = NavigateToNext;
     }
     
-    if ([self.fileViewNavigationDelegate respondsToSelector:@selector(viewController:withNavigateDirection:)]) {
-        [self.fileViewNavigationDelegate viewController:self withNavigateDirection:navigationDirection];
+    if ([self.fileViewControllerDelegate respondsToSelector:@selector(viewController:withNavigateDirection:)]) {
+        [self.fileViewControllerDelegate viewController:self withNavigateDirection:navigationDirection];
     }
 }
 
