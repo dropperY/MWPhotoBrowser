@@ -24,7 +24,8 @@
     // Other
     NSString *_caption;
     BOOL _loadingInProgress;
-        
+    
+    BOOL _valid;
 }
 
 // Properties
@@ -41,7 +42,8 @@
 
 // Properties
 @synthesize underlyingImage = _underlyingImage, 
-caption = _caption;
+caption = _caption,
+valid = _valid;
 
 #pragma mark Class Methods
 
@@ -62,6 +64,7 @@ caption = _caption;
 - (id)initWithImage:(UIImage *)image {
 	if ((self = [super init])) {
 		self.underlyingImage = image;
+        _valid = YES;
 	}
 	return self;
 }
@@ -69,6 +72,7 @@ caption = _caption;
 - (id)initWithFilePath:(NSString *)path {
 	if ((self = [super init])) {
 		_photoPath = [path copy];
+        _valid = YES;
 	}
 	return self;
 }
@@ -76,6 +80,7 @@ caption = _caption;
 - (id)initWithURL:(NSURL *)url {
 	if ((self = [super init])) {
 		_photoURL = [url copy];
+        _valid = YES;
 	}
 	return self;
 }
@@ -134,13 +139,28 @@ caption = _caption;
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     @try {
         NSError *error = nil;
+        if (!_valid) {
+            return;
+        }
         NSData *data = [NSData dataWithContentsOfFile:_photoPath options:NSDataReadingUncached error:&error];
+        
         if (!error) {
-            if (data.length > 2 * pow(1024, 2)) {
-                UIImage *theImage =  [UIImage imageWithData:data];
-                data = UIImageJPEGRepresentation(theImage, 0.5);
+            if (data.length < 10 * pow(1024, 2)) {
+                if (data.length > 2 * pow(1024, 2)) {
+                    UIImage *theImage =  [UIImage imageWithData:data];
+                    if (!_valid) {
+                        return;
+                    }
+                    data = UIImageJPEGRepresentation(theImage, 0.1);
+                }
+                if (!_valid) {
+                    return;
+                }
+                self.underlyingImage = [[[UIImage alloc] initWithData:data] autorelease];
+            } else {
+                self.underlyingImage = nil;
+                MWLog(@"Size Of photo is too large");
             }
-            self.underlyingImage = [[[UIImage alloc] initWithData:data] autorelease];
         } else {
             self.underlyingImage = nil;
             MWLog(@"Photo from file error: %@", error);

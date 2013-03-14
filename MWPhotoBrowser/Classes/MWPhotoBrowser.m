@@ -552,6 +552,17 @@ navigationBarBackgroundImageLandscapePhone = _navigationBarBackgroundImageLandsc
     
 }
 
+- (void)stopLoading
+{
+    for (id<MWPhoto> photo in _photos) {
+        if ([photo isKindOfClass:[MWPhoto class]]) {
+            MWPhoto *mwPhoto = (MWPhoto *)photo;
+            mwPhoto.valid = NO;
+        }
+    }
+    [self releaseAllUnderlyingPhotos];
+}
+
 - (NSUInteger)numberOfPhotos {
     if (_photoCount == NSNotFound) {
         if ([_delegate respondsToSelector:@selector(numberOfPhotosInPhotoBrowser:)]) {
