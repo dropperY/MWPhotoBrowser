@@ -847,10 +847,10 @@ navigationBarBackgroundImageLandscapePhone = _navigationBarBackgroundImageLandsc
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
 	if (scrollView.contentOffset.x < kLeftBound) {
-        if ([self.fileViewControllerDelegate respondsToSelector:@selector(viewController:withNavigateDirection:)]) {
-            [self.fileViewControllerDelegate viewController:self withNavigateDirection:NavigateToPrevious];
+        if ([self.fileViewControllerDelegate respondsToSelector:@selector(viewControllerWillDisappear:)]) {
+            [self.fileViewControllerDelegate viewControllerWillDisappear:self];
+            return;
         }
-        return;
 	}
     
     // Checks
@@ -1192,15 +1192,12 @@ navigationBarBackgroundImageLandscapePhone = _navigationBarBackgroundImageLandsc
 
 - (void)swipe:(UISwipeGestureRecognizer *)sender
 {
-    NavigateDirection navigationDirection;
     if (sender.direction == UISwipeGestureRecognizerDirectionRight) {
-        navigationDirection = NavigateToPrevious;
+        if ([self.fileViewControllerDelegate respondsToSelector:@selector(viewControllerWillDisappear:)]) {
+            [self.fileViewControllerDelegate viewControllerWillDisappear:self];
+        }
     } else if (sender.direction == UISwipeGestureRecognizerDirectionLeft) {
-        navigationDirection = NavigateToNext;
-    }
-    
-    if ([self.fileViewControllerDelegate respondsToSelector:@selector(viewController:withNavigateDirection:)]) {
-        [self.fileViewControllerDelegate viewController:self withNavigateDirection:navigationDirection];
+        
     }
 }
 
