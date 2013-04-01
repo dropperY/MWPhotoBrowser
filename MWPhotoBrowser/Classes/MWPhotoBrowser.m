@@ -49,7 +49,7 @@ static float kLeftBound = -40.0;
     MBProgressHUD *_progressHUD;
     
     // Appearance
-    UIImage *_navigationBarBackgroundImageDefault, 
+    UIImage *_navigationBarBackgroundImageDefault,
     *_navigationBarBackgroundImageLandscapePhone;
     UIColor *_previousNavBarTintColor;
     UIBarStyle _previousNavBarStyle;
@@ -653,7 +653,7 @@ navigationBarBackgroundImageLandscapePhone = _navigationBarBackgroundImageLandsc
         if ([photo underlyingImage]) {
             // Successful load
             [page displayImage];
-//            [self loadAdjacentPhotosIfNecessary:photo];
+            //            [self loadAdjacentPhotosIfNecessary:photo];
         } else {
             // Failed to load
             [page displayImageFailure];
@@ -764,7 +764,7 @@ navigationBarBackgroundImageLandscapePhone = _navigationBarBackgroundImageLandsc
     NSUInteger i;
     if (index > 0) {
         // Release anything < index - 1
-        for (i = 0; i < index-1; i++) { 
+        for (i = 0; i < index-1; i++) {
             id photo = [_photos objectAtIndex:i];
             if (photo != [NSNull null]) {
                 [photo unloadUnderlyingImage];
@@ -787,21 +787,18 @@ navigationBarBackgroundImageLandscapePhone = _navigationBarBackgroundImageLandsc
     
     // Load adjacent images if needed and the photo is already
     // loaded. Also called after photo has been loaded in background
-//    id <MWPhoto> currentPhoto = [self photoAtIndex:index];
-//    if ([currentPhoto underlyingImage]) {
-//        // photo loaded so load ajacent now
-//        [self loadAdjacentPhotosIfNecessary:currentPhoto];
-//    }
+    //    id <MWPhoto> currentPhoto = [self photoAtIndex:index];
+    //    if ([currentPhoto underlyingImage]) {
+    //        // photo loaded so load ajacent now
+    //        [self loadAdjacentPhotosIfNecessary:currentPhoto];
+    //    }
     
 }
 
 #pragma mark - Frame Calculations
 
 - (CGRect)frameForPagingScrollView {
-    CGRect frame = self.view.bounds;// [[UIScreen mainScreen] bounds];
-    frame.origin.x -= PADDING;
-    frame.size.width += (2 * PADDING);
-    return frame;
+    return self.view.bounds;// [[UIScreen mainScreen] bounds];
 }
 
 - (CGRect)frameForPageAtIndex:(NSUInteger)index {
@@ -809,11 +806,7 @@ navigationBarBackgroundImageLandscapePhone = _navigationBarBackgroundImageLandsc
     // landscape orientation, the frame will still be in portrait because the pagingScrollView is the root view controller's
     // view, so its frame is in window coordinate space, which is never rotated. Its bounds, however, will be in landscape
     // because it has a rotation transform applied.
-    CGRect bounds = _pagingScrollView.bounds;
-    CGRect pageFrame = bounds;
-    pageFrame.size.width -= (2 * PADDING);
-    pageFrame.origin.x = (bounds.size.width * index) + PADDING;
-    return pageFrame;
+    return _pagingScrollView.bounds;
 }
 
 - (CGSize)contentSizeForPagingScrollView {
@@ -888,7 +881,7 @@ navigationBarBackgroundImageLandscapePhone = _navigationBarBackgroundImageLandsc
     
 	// Title
 	if ([self numberOfPhotos] > 1) {
-		self.title = [NSString stringWithFormat:@"%i %@ %i", _currentPageIndex+1, NSLocalizedString(@"of", @"Used in the context: 'Showing 1 of 3 items'"), [self numberOfPhotos]];		
+		self.title = [NSString stringWithFormat:@"%i %@ %i", _currentPageIndex+1, NSLocalizedString(@"of", @"Used in the context: 'Showing 1 of 3 items'"), [self numberOfPhotos]];
 	} else {
 		self.title = nil;
 	}
@@ -1058,14 +1051,14 @@ navigationBarBackgroundImageLandscapePhone = _navigationBarBackgroundImageLandsc
 #pragma mark - Action Sheet Delegate
 
 - (void)actionSheet:(UIActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex {
-    if (actionSheet == _actionsSheet) {           
-        // Actions 
+    if (actionSheet == _actionsSheet) {
+        // Actions
         self.actionsSheet = nil;
         if (buttonIndex != actionSheet.cancelButtonIndex) {
             if (buttonIndex == actionSheet.firstOtherButtonIndex) {
                 [self savePhoto]; return;
             } else if (buttonIndex == actionSheet.firstOtherButtonIndex + 1) {
-                [self copyPhoto]; return;	
+                [self copyPhoto]; return;
             } else if (buttonIndex == actionSheet.firstOtherButtonIndex + 2) {
                 [self emailPhoto]; return;
             }
@@ -1126,7 +1119,7 @@ navigationBarBackgroundImageLandscapePhone = _navigationBarBackgroundImageLandsc
 
 - (void)actuallySavePhoto:(id<MWPhoto>)photo {
     if ([photo underlyingImage]) {
-        UIImageWriteToSavedPhotosAlbum([photo underlyingImage], self, 
+        UIImageWriteToSavedPhotosAlbum([photo underlyingImage], self,
                                        @selector(image:didFinishSavingWithError:contextInfo:), nil);
     }
 }
